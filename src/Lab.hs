@@ -33,7 +33,7 @@ runIdentity :: Identity a -> a
 runIdentity (Identity a) = a
 
 instance Functor Identity where
-    fmap = undefined
+    fmap f (Identity a) = Identity (f a)
 
 --------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ getConst :: Const v a -> v
 getConst (Const x) = x
 
 instance Functor (Const v) where
-    fmap = undefined
+    fmap f (Const x) = Const x
 
 --------------------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ data Point a = Point a a
     deriving (Eq, Show)
 
 instance Functor Point where
-    fmap = undefined
+    fmap f (Point a b) = Point (f a) (f b)
 
 --------------------------------------------------------------------------------
 
@@ -63,7 +63,9 @@ data RoseTree a = Leaf a | Node [RoseTree a]
     deriving (Eq, Show)
 
 instance Functor RoseTree where
-    fmap = undefined
+    fmap f (Leaf      a) = Leaf (f  a) 
+    fmap f (Node     []) = Node []
+    fmap f (Node xs) = Node (map (fmap f) xs)
 
 --------------------------------------------------------------------------------
 
@@ -72,7 +74,7 @@ data Compose f g a = Compose (f (g a))
     deriving (Eq, Show)
 
 instance (Functor f, Functor g) => Functor (Compose f g) where
-    fmap = undefined
+    fmap f (Compose a) = Compose (fmap (fmap f) a)
 
 --------------------------------------------------------------------------------
 
@@ -91,8 +93,13 @@ fresh :: State Int Int
 fresh = St (\s -> (s,s+1))
 
 instance Functor (State s) where
+    --m :: \s -> (a, s)
+    --fmap :: (a -> b) -> State a c -> State b c
+    -- fmap (*2) fresh => fmap (*2) (\s -> (s,s+1)) => \s -> (s*2,s+1)
+    -- fmap f fresh => fmap f (\s -> (s,s+1)) => (\s -> (f s, s+1))
     fmap f (St m) = undefined
 
+        
 --------------------------------------------------------------------------------
 
 instance Functor ((->) r) where
