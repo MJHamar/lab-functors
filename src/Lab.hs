@@ -93,12 +93,9 @@ fresh :: State Int Int
 fresh = St (\s -> (s,s+1))
 
 instance Functor (State s) where
-    --m :: \s -> (a, s)
-    --fmap :: (a -> b) -> State a c -> State b c
-    -- fmap (*2) fresh => fmap (*2) (\s -> (s,s+1)) => \s -> (s*2,s+1)
-    -- fmap f fresh => fmap f (\s -> (s,s+1)) => (\s -> (f s, s+1))
-    fmap f (St m) = undefined
-
+    -- m :: (\s -> (a,s))
+    -- f :: a -> b
+    fmap f (St m) = St (f )
         
 --------------------------------------------------------------------------------
 
